@@ -1,0 +1,80 @@
+# LYAPUNOV LAB
+
+数式・状態空間・時間グラフを同期して操作する教育用Webアプリです。React + TypeScript + Vite + SVG + KaTeX。3D地形は計算した曲面をSVGへ投影して描き、WebGLや追加ライブラリは不要です。計算はブラウザ内で完結し、APIやデータベースは使用しません。
+
+## 起動
+
+Node.js 24 LTSを推奨します（最低22.12）。この `app` ディレクトリで実行します。
+
+```sh
+npm ci
+npm run dev
+```
+
+ターミナルに表示されるローカルURLを開きます。通常は `http://127.0.0.1:5173/` です。
+
+## 実装範囲
+
+仕様書のPHASE 1〜6を中心とした、定理1の教育用モデルを公開メニューにしています。
+
+- 周辺を平面にした格子状の3D地形と中央のくぼみ・TCZ境界・状態点・軌跡と視点操作（Vの表示高さを圧縮）
+- 3D地形／2D等高線の切り替え（時間・パラメータを維持）
+- 2D表示での等高線・TCZ・ベクトル場
+- 点のドラッグ／矢印キー移動、初期位置・閾値・地形・減少率・回転率の変更
+- 再生／一時停止／リセット／時間スライダーとグラフの同期
+- 符号付き残差、正部分ゲージ、接線、指数上限、V/y表示切り替え
+- 数式トークンと図の双方向ハイライト、6段階の証明再生
+- 標準表示は有限時間でTCZへ到達し、進入時の速度を引き継いで内部を漂遊
+- TCZ内の過去軌道・現在速度の矢印・グラフ上の到達時刻の表示
+- 直感／数式／証明の表示モード、理解確認問題
+- モバイル表示、キーボード操作、動きの自動再生なし
+
+メニューは「比較評価」「条件を壊す」「前方不変性」の3つです。条件を壊す実験（弱い減少・周回・外向き）と、境界方向・前方不変性の実験を含み、テーマごとに証明ステップと保証表示も切り替わります。LaSalleは図示メニューから外しています。内部の参考モデルと数値テストは保持しています。
+
+標準の「TCZに入って漂う」は、外側でV̇ = −βVとする到達例と、内部の漂遊モデルをつないだ教材用の軌道です。内部ではVが増減してもθ以下を保ちます。位置と速度は連続ですが、内部軌道は原論文の数式から導出したものではなく、進行方向を引き継ぐ滑らかな楕円軌道を追加しています。「上限と一致させる」では、従来の境界に漸近する比較例も確認できます。
+
+定理2・3のシミュレーションは未実装です。画面下の定理2・3は開発予定を示す表示です。数式モデルと、その成立条件・出典は [docs/mathematics.md](docs/mathematics.md) を参照してください。
+
+## 検証
+
+```sh
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+数値テストでは比較評価・場と解析解の整合性・不変性などを確認します。E2Eテストはデスクトップとモバイルで同期、数式と図の選択、内部初期条件、再生／一時停止、証明完走、条件破壊時の保証表示、TCZへの到達と内部の漂遊を確認します。E2Eは事前に生成した `dist` を使用します。
+
+## GitHub Pagesへ公開
+
+この `app` の**中身だけを専用リポジトリのルート**に置く構成です。上位のCognitiveMindリポジトリを公開する必要はありません。`node_modules`、`dist`、開発用テスト出力は `.gitignore` で除外しています。元資料・PDF・事業データはアプリから参照・コピーしていません。
+
+1. GitHubで専用リポジトリ（例：`lyapunov-lab`）を作成します。GitHub FreeでPagesを利用する場合は公開リポジトリにします。
+2. このフォルダ内のソース、`package-lock.json`、隠しフォルダ `.github`、`.gitignore` を含めて、専用リポジトリのルートに配置して `main` へpushします。
+3. リポジトリの **Settings → Pages → Build and deployment → Source** を **GitHub Actions** にします。
+4. Actionsの **Test and deploy Lyapunov Lab** を実行します（設定後に再実行できます）。テスト・ビルド成功後に公開されます。
+5. 公開URLは `https://<username>.github.io/<repository>/` です。実際のURLはActionsのデプロイ結果に表示されます。
+
+`.github/workflows/pages.yml` は、このフォルダを専用リポジトリのルートにしたときに動きます。現在の親リポジトリの深い階層に置いたままではGitHub Actionsは検出しません。
+
+`base: './'` と画面内ナビゲーションを使うため、リポジトリ名や独自ドメインに依存したアセットパスはありません。URLパスを切り替えるSPAルーティングも使用せず、GitHub Pagesの404フォールバックに依存しません。
+
+参考： [ViteのGitHub Pages公開手順](https://vite.dev/guide/static-deploy.html#github-pages)、[GitHub Pagesの利用制限](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)。
+
+## 主な構成
+
+```text
+src/model/lyapunov.ts         数学モデルと解析解
+src/proof.ts                 比較評価の証明ステップ
+src/experimentProof.ts       実験テーマごとの証明と保証表示
+src/components/ExperimentControls  実験テーマ・条件の切り替え
+src/interaction.ts           数式と図の共通ID
+src/components/StateSpace    状態空間の描画と操作
+src/components/TimeGraph     時間グラフと接線
+src/components/MathToken     数式トークン
+src/components/ParameterControls  パラメータ操作
+src/App.tsx                  再生・学習ステップの統合
+```
+
+定理2・3を追加するときは、対応する数学モデルと証明ステップを追加し、共通IDによる選択・再生コントロールを再利用する構成です。初期版の型は単一主体の2Dモデル用です。
