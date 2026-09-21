@@ -1,10 +1,12 @@
 # LYAPUNOV LAB
 
+日本語 | [English](README.en.md)
+
 数式・状態空間・時間グラフを同期して操作する教育用Webアプリです。React + TypeScript + Vite + SVG + KaTeX。3D地形は計算した曲面をSVGへ投影して描き、WebGLや追加ライブラリは不要です。計算はブラウザ内で完結し、APIやデータベースは使用しません。
 
 ## 起動
 
-Node.js 24 LTSを推奨します（最低22.12）。この `app` ディレクトリで実行します。
+Node.js 24 LTSを推奨します（最低22.12）。リポジトリのルートで実行します。
 
 ```sh
 npm ci
@@ -15,7 +17,7 @@ npm run dev
 
 ## 実装範囲
 
-仕様書のPHASE 1〜6を中心とした、定理1の教育用モデルを公開メニューにしています。
+定理1に関わる比較評価・収束・前方不変性を、具体的なモデルで学べます。
 
 - 周辺を平面にした格子状の3D地形と中央のくぼみ・TCZ境界・状態点・軌跡と視点操作（Vの表示高さを圧縮）
 - 3D地形／2D等高線の切り替え（時間・パラメータを維持）
@@ -46,21 +48,17 @@ npm run test:e2e
 
 数値テストでは比較評価・場と解析解の整合性・不変性などを確認します。E2Eテストはデスクトップとモバイルで同期、数式と図の選択、内部初期条件、再生／一時停止、証明完走、条件破壊時の保証表示、TCZへの到達と内部の漂遊を確認します。E2Eは事前に生成した `dist` を使用します。
 
-## GitHub Pagesへ公開
+## 公開サイトと更新
 
-この `app` の**中身だけを専用リポジトリのルート**に置く構成です。上位のCognitiveMindリポジトリを公開する必要はありません。`node_modules`、`dist`、開発用テスト出力は `.gitignore` で除外しています。元資料・PDF・事業データはアプリから参照・コピーしていません。
+公開サイト： [Lyapunov Lab](https://inthecradle.github.io/lyapunov-lab/)
 
-1. GitHubで専用リポジトリ（例：`lyapunov-lab`）を作成します。GitHub FreeでPagesを利用する場合は公開リポジトリにします。
-2. このフォルダ内のソース、`package-lock.json`、隠しフォルダ `.github`、`.gitignore` を含めて、専用リポジトリのルートに配置して `main` へpushします。
-3. リポジトリの **Settings → Pages → Build and deployment → Source** を **GitHub Actions** にします。
-4. Actionsの **Test and deploy Lyapunov Lab** を実行します（設定後に再実行できます）。テスト・ビルド成功後に公開されます。
-5. 公開URLは `https://<username>.github.io/<repository>/` です。実際のURLはActionsのデプロイ結果に表示されます。
+リポジトリ： [inthecradle/lyapunov-lab](https://github.com/inthecradle/lyapunov-lab)
 
-`.github/workflows/pages.yml` は、このフォルダを専用リポジトリのルートにしたときに動きます。現在の親リポジトリの深い階層に置いたままではGitHub Actionsは検出しません。
+`main` へのpushで `.github/workflows/pages.yml` が実行されます。数値テスト・ビルド・ブラウザ操作テストの成功後、GitHub Pagesへ自動反映されます。
+
+`node_modules`、`dist`、テスト出力は `.gitignore` で除外しています。公開する成果物はビルドで生成される `dist` です。
 
 `base: './'` と画面内ナビゲーションを使うため、リポジトリ名や独自ドメインに依存したアセットパスはありません。URLパスを切り替えるSPAルーティングも使用せず、GitHub Pagesの404フォールバックに依存しません。
-
-参考： [ViteのGitHub Pages公開手順](https://vite.dev/guide/static-deploy.html#github-pages)、[GitHub Pagesの利用制限](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)。
 
 ## 主な構成
 

@@ -988,6 +988,11 @@ details[open] > summary > span {
 .about-content p {
   margin-bottom: 15px;
 }
+.about-content a {
+  color: var(--mint);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .about-content h3 {
   font-size: 13px;
   font-weight: 500;

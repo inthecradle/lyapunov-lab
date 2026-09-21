@@ -750,8 +750,23 @@ export default function App() {
                 </p>
                 <p>
                   参考：苫米地英人『A Unified Theory of Latent Potentials:
-                  Homeostasis and Cognitive Warfare』公開版
-                  §2.7〜2.10、および『認知潜在ポテンシャル自由エネルギー理論』の統一収束補題・定理1。本アプリは最適制御問題の求解や定理1全体の証明を行うものではありません。
+                  Homeostasis and Cognitive Warfare』公開版（
+                  <a
+                    href="https://tomabechi.jp/TomabechiNDUpaperJApublic.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    日本語公開版PDF
+                  </a>
+                  ）§2.7〜2.10、および『
+                  <a
+                    href="https://tomabechi.jp/CognitiveLatentPotentialFreeEnergyTheoryJA.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    認知潜在ポテンシャル自由エネルギー理論
+                  </a>
+                  』の統一収束補題・定理1。本アプリは最適制御問題の求解や定理1全体の証明を行うものではありません。
                 </p>
                 <h3>TCZへの到達と内部の漂遊</h3>
                 <p>
