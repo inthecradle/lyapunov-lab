@@ -1062,6 +1062,13 @@ footer i {
   margin: 0 12px;
   color: #385160;
 }
+footer a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+footer a:hover {
+  color: var(--mint);
+}
 .lit-text {
   color: var(--mint) !important;
 }

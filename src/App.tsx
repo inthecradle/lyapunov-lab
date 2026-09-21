@@ -796,7 +796,7 @@ export default function App() {
               <span>01 / INDIVIDUAL</span>
               <h3>V → TCZ</h3>
               <p>
-                個人の安定性 <b>公開準備版</b>
+                個人の安定性 <b>公開版</b>
               </p>
             </article>
             <article>
@@ -818,9 +818,10 @@ export default function App() {
       </main>
       <footer>
         <span>
-          LYAPUNOV LAB <i>/</i> CognitiveMind
+          LYAPUNOV LAB <i>/</i>{" "}
+          <a href="https://note.com/dawn_of_coaching">コーチングの夜明け</a>{" "}
+          <i>/</i> CognitiveMind Inc.
         </span>
-        <span>数式を触る。その構造が見えてくる。</span>
       </footer>
     </div>
   );
