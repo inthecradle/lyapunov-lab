@@ -27,7 +27,7 @@ Explore comparison estimates, convergence, and forward invariance related to The
 - Dragging the state point or moving it with arrow keys; adjusting the initial position, threshold, terrain shape, decay rate, and rotation rate
 - Play, pause, reset, and a time slider synchronized with the graphs
 - A signed residual, a positive-part gauge, tangents, an exponential upper bound, and a V/y display toggle
-- Bidirectional highlighting between mathematical symbols and diagrams, with a six-step proof playback
+- Bidirectional highlighting between mathematical symbols and diagrams, with a six-step proof navigated using previous/next buttons
 - A default trajectory that enters the TCZ in finite time and then drifts inside, with continuous position and velocity
 - Past trajectories and current velocity inside the TCZ, with the entry time marked on the graph
 - Intuition, equations, and proof display modes, plus comprehension questions
@@ -48,7 +48,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Numerical tests cover comparison estimates, consistency between vector fields and analytical solutions, and invariance. Desktop and mobile end-to-end tests cover synchronization, selecting equations and diagrams, interior initial conditions, playback controls, complete proof playback, guarantee indicators when conditions are broken, TCZ entry, and interior drift. End-to-end tests use the previously built `dist` directory.
+Numerical tests cover comparison estimates, consistency between vector fields and analytical solutions, and invariance. Desktop and mobile end-to-end tests cover synchronization, selecting equations and diagrams, interior initial conditions, playback controls, manual proof-step navigation, guarantee indicators when conditions are broken, TCZ entry, and interior drift. End-to-end tests use the previously built `dist` directory.
 
 ## Published site and updates
 

@@ -131,9 +131,30 @@ test("inside starts keep a negative signed residual with zero external remainder
   await expect(page.locator(".residual-card strong")).toHaveText("0.000");
 });
 
-test("play/pause and proof replay remain controllable", async ({ page }) => {
+test("simulation stays controllable and proof advances only through manual steps", async ({
+  page,
+}) => {
   await page.goto("./");
   await page.clock.install();
+  const previous = page.getByRole("button", {
+    name: "前の証明ステップ",
+    exact: true,
+  });
+  const next = page.getByRole("button", {
+    name: "次の証明ステップ",
+    exact: true,
+  });
+  await expect(
+    page.getByRole("button", {
+      name: /証明を再生|証明を一時停止|証明をもう一度/,
+    }),
+  ).toHaveCount(0);
+  await expect(page.locator(".step-navigation")).toHaveCount(0);
+  await expect(
+    page.getByRole("navigation", { name: "学習ステップ" }),
+  ).toHaveCount(0);
+  await expect(previous).toBeDisabled();
+  await expect(next).toBeEnabled();
   await page
     .getByRole("button", { name: "シミュレーションを再生", exact: true })
     .click();
@@ -147,17 +168,30 @@ test("play/pause and proof replay remain controllable", async ({ page }) => {
   const paused = await page.getByTestId("time-output").textContent();
   await page.clock.runFor(1000);
   await expect(page.getByTestId("time-output")).toHaveText(paused!);
-  await page.getByRole("button", { name: "▶ 証明を再生", exact: true }).click();
-  await page.clock.runFor(15000);
+  await expect(page.locator(".proof-counter")).toHaveText("01 / 06");
+  for (let step = 2; step <= 6; step++) {
+    await next.click();
+    await expect(page.locator(".proof-counter")).toHaveText(`0${step} / 06`);
+  }
+  await expect(next).toBeDisabled();
+  await expect(previous).toBeEnabled();
   await expect(page.getByTestId("proof-status")).toContainText(
     "TCZへの到達と領域内の漂遊を確認しました",
   );
-  await expect(page.getByTestId("time-output")).toContainText("12.00");
+  await expect(page.getByTestId("time-output")).toContainText("10.00");
+  await previous.click();
+  await expect(page.locator(".proof-counter")).toHaveText("05 / 06");
+  await expect(page.getByTestId("proof-status")).not.toContainText(
+    "確認しました",
+  );
+  await page.clock.runFor(3000);
+  await expect(page.locator(".proof-counter")).toHaveText("05 / 06");
+  await expect(page.getByTestId("time-output")).toContainText("8.00");
   await page.getByRole("button", { name: "リセット", exact: true }).click();
   await expect(page.getByTestId("time-output")).toContainText("0.00");
-  await expect(
-    page.locator('.step-navigation [aria-current="step"]'),
-  ).toContainText("状態空間");
+  await expect(page.locator(".proof-counter")).toHaveText("01 / 06");
+  await expect(previous).toBeDisabled();
+  await expect(next).toBeEnabled();
 });
 
 test("quiz explains asymptotic approach without claiming finite arrival", async ({
@@ -208,31 +242,38 @@ test("curve targets select formula tokens and V view selects V", async ({
   );
 });
 
-test("proof resumes from scrubbed time and parameter changes restart its steps", async ({
+test("proof steps are independent of animation time and parameter changes restart them", async ({
   page,
 }) => {
   await page.goto("./");
   await page.clock.install();
   await page.getByRole("button", { name: "証明", exact: true }).click();
   await setRange(page, "時間", 6);
-  await page.getByRole("button", { name: "▶ 証明を再生", exact: true }).click();
-  await page.clock.runFor(400);
-  const value = Number(
-    (await page.getByTestId("time-output").textContent())?.split("/")[0],
-  );
-  expect(value).toBeGreaterThan(6);
-  expect(value).toBeLessThan(7);
+  await expect(page.locator(".proof-counter")).toHaveText("01 / 06");
+  await page
+    .getByRole("button", { name: "シミュレーションを再生", exact: true })
+    .click();
+  await page.clock.runFor(3000);
+  await expect(page.locator(".proof-counter")).toHaveText("01 / 06");
+  await page
+    .getByRole("button", { name: "次の証明ステップ", exact: true })
+    .click();
+  await expect(page.locator(".proof-counter")).toHaveText("02 / 06");
+  await expect(page.getByTestId("time-output")).toContainText("2.00");
+  await expect(
+    page.getByRole("button", { name: "シミュレーションを再生", exact: true }),
+  ).toBeVisible();
+  await page.clock.runFor(3000);
+  await expect(page.locator(".proof-counter")).toHaveText("02 / 06");
+  await expect(page.getByTestId("time-output")).toContainText("2.00");
   await page.locator('[data-math-token="theta"]').click();
-  await page.clock.runFor(200);
   await expect(page.locator('[data-math-token="theta"]')).toHaveAttribute(
     "aria-pressed",
     "true",
   );
   await setRange(page, "減少率の保証", 1);
   await expect(page.getByTestId("time-output")).toContainText("0.00");
-  await expect(
-    page.locator('.step-navigation [aria-current="step"]'),
-  ).toContainText("状態空間");
+  await expect(page.locator(".proof-counter")).toHaveText("01 / 06");
 });
 
 test("dragging a state point changes the initial condition and resets the clock", async ({
@@ -310,6 +351,9 @@ test("camera controls keep the surface in view without changing the model", asyn
   page,
 }, testInfo) => {
   await page.goto("./");
+  if (testInfo.project.name === "mobile") {
+    await page.getByText("視点・操作ガイド", { exact: true }).click();
+  }
   const point = page.getByTestId("state-point");
   const x = await point.getAttribute("data-x");
   const height = await point.getAttribute("data-height");

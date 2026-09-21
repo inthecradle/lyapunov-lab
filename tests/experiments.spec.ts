@@ -8,9 +8,19 @@ const choose = (page: Page, name: string) =>
   page.getByRole("button", { name, exact: true }).click();
 
 async function finishProof(page: Page) {
-  await page.clock.install();
-  await choose(page, "▶ 証明を再生");
-  await page.clock.runFor(15000);
+  const next = page.getByRole("button", {
+    name: "次の証明ステップ",
+    exact: true,
+  });
+  for (
+    let remaining = 5;
+    remaining > 0 && (await next.isEnabled());
+    remaining--
+  ) {
+    await next.click();
+  }
+  await expect(next).toBeDisabled();
+  await expect(page.locator(".proof-counter")).toHaveText("06 / 06");
 }
 
 test("weakened decrease loses the selected exponential guarantee but still converges", async ({
@@ -37,6 +47,7 @@ test("weakened decrease loses the selected exponential guarantee but still conve
   await expect(page.locator(".invalid-step")).toHaveCount(2);
   await choose(page, "比較評価");
   await expect(page.getByTestId("time-output")).toContainText("0.00");
+  await expect(page.locator(".proof-counter")).toHaveText("01 / 06");
   await expect(
     page.getByRole("button", { name: "保証される上限", exact: true }),
   ).toBeEnabled();
@@ -66,6 +77,17 @@ test("invariance preserves the threshold for outward motion starting inside", as
 }, testInfo) => {
   await page.goto("./");
   await choose(page, "前方不変性");
+  await expect(
+    page.getByRole("button", { name: "外側へ向ける", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByRole("button", { name: "内側から", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  expect(await height(page)).toBeCloseTo(0.49, 8);
+  await scrub(page, 4);
+  expect(await height(page)).toBeGreaterThan(0.49);
+  expect(await height(page)).toBeLessThan(1);
+  await choose(page, "境界から");
   await expect(page.getByTestId("boundary-vectors")).toHaveAttribute(
     "data-direction",
     "tangent",
@@ -228,9 +250,10 @@ test("display modes explain their effect and parameters precede the proof", asyn
   await expect(page.locator(".proof-formula")).toBeVisible();
   await choose(page, "証明");
   await scrub(page, 6);
-  await expect(
-    page.locator(".step-navigation [aria-current='step']"),
-  ).toContainText("減少条件");
+  await expect(page.locator(".proof-counter")).toHaveText("01 / 06");
+  await choose(page, "次の証明ステップ");
+  await expect(page.locator(".proof-counter")).toHaveText("02 / 06");
+  await expect(page.getByTestId("time-output")).toContainText("2.00");
   expect(
     await page
       .locator(".parameters")

@@ -35,9 +35,9 @@ export function presetsForStudy(study: Study, params: Parameters): Parameters {
     case "invariance":
       return {
         ...params,
-        dynamics: "normal",
+        dynamics: "contained",
         rotation: 0.55,
-        initial: { x: Math.sqrt(params.theta), y: 0 },
+        initial: { x: 0.7 * Math.sqrt(params.theta), y: 0 },
       };
     case "lasalle":
       return {

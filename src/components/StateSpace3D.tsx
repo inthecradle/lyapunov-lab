@@ -1,4 +1,4 @@
-import { useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent, PointerEvent } from "react";
 import {
   potential,
@@ -48,6 +48,15 @@ export default function StateSpace3D({
   const [yaw, setYaw] = useState(-28);
   const [elevation, setElevation] = useState(37);
   const [dragging, setDragging] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(
+    () => window.matchMedia("(min-width: 761px)").matches,
+  );
+  useEffect(() => {
+    const wideScreen = window.matchMedia("(min-width: 761px)");
+    const update = () => setToolsOpen(wideScreen.matches);
+    wideScreen.addEventListener("change", update);
+    return () => wideScreen.removeEventListener("change", update);
+  }, []);
   const drag = useRef<{
     start: Vec2;
     origin: Vec2;
@@ -856,77 +865,85 @@ export default function StateSpace3D({
           </text>
         </g>
       </svg>
-      <div
-        style={{
-          display: "flex",
-          gap: "18px",
-          flexWrap: "wrap",
-          padding: "4px 24px 0",
-          color: "#a4b4c2",
-          fontSize: "11px",
-        }}
+      <details
+        className="state-tools"
+        open={toolsOpen}
+        onToggle={(event) => setToolsOpen(event.currentTarget.open)}
       >
-        <label
+        <summary>視点・操作ガイド</summary>
+        <div
           style={{
             display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            flex: "1 1 180px",
+            gap: "18px",
+            flexWrap: "wrap",
+            padding: "4px 24px 0",
+            color: "#a4b4c2",
+            fontSize: "11px",
           }}
         >
-          <span style={{ whiteSpace: "nowrap", flexShrink: 0 }}>回転</span>
-          <input
-            aria-label="3D視点の回転"
-            type="range"
-            min="-80"
-            max="80"
-            step="1"
-            value={yaw}
-            onChange={(e) => setYaw(Number(e.target.value))}
-            style={{ minWidth: 0, width: "100%", accentColor: "#65e6d0" }}
-          />
-        </label>
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            flex: "1 1 180px",
-          }}
-        >
-          <span style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
-            見下ろす角度
-          </span>
-          <input
-            aria-label="3D視点の仰角"
-            type="range"
-            min="22"
-            max="65"
-            step="1"
-            value={elevation}
-            onChange={(e) => setElevation(Number(e.target.value))}
-            style={{ minWidth: 0, width: "100%", accentColor: "#65e6d0" }}
-          />
-        </label>
-      </div>
-      {params.dynamics && (
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flex: "1 1 180px",
+            }}
+          >
+            <span style={{ whiteSpace: "nowrap", flexShrink: 0 }}>回転</span>
+            <input
+              aria-label="3D視点の回転"
+              type="range"
+              min="-80"
+              max="80"
+              step="1"
+              value={yaw}
+              onChange={(e) => setYaw(Number(e.target.value))}
+              style={{ minWidth: 0, width: "100%", accentColor: "#65e6d0" }}
+            />
+          </label>
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flex: "1 1 180px",
+            }}
+          >
+            <span style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
+              見下ろす角度
+            </span>
+            <input
+              aria-label="3D視点の仰角"
+              type="range"
+              min="22"
+              max="65"
+              step="1"
+              value={elevation}
+              onChange={(e) => setElevation(Number(e.target.value))}
+              style={{ minWidth: 0, width: "100%", accentColor: "#65e6d0" }}
+            />
+          </label>
+        </div>
+        {params.dynamics && (
+          <p className="state-help">
+            {dynamics === "drift"
+              ? "矢印：現在の進行方向。TCZ内の漂遊は追加した可視化モデルです。"
+              : dynamics === "lasalle"
+                ? params.rotation !== 0
+                  ? "黄破線：散逸ゼロ集合 E（V̇ = 0）／ 青点：最大不変集合 M"
+                  : "黄破線：散逸ゼロ集合 E。この設定では線全体が不変で、M = E です。"
+                : "境界上の矢印：状態の進む向き（赤は外向き、緑は接線または内向き）"}
+          </p>
+        )}
         <p className="state-help">
-          {dynamics === "drift"
-            ? "矢印：現在の進行方向。TCZ内の漂遊は追加した可視化モデルです。"
-            : dynamics === "lasalle"
-              ? params.rotation !== 0
-                ? "黄破線：散逸ゼロ集合 E（V̇ = 0）／ 青点：最大不変集合 M"
-                : "黄破線：散逸ゼロ集合 E。この設定では線全体が不変で、M = E です。"
-              : "境界上の矢印：状態の進む向き（赤は外向き、緑は接線または内向き）"}
+          点をドラッグして状態平面上の初期位置を変更 ·
+          矢印キーでも移動できます。
+          <br />
+          <span>
+            高さはVを圧縮表示しています。物理的な時空や重力の再現ではありません。
+          </span>
         </p>
-      )}
-      <p className="state-help">
-        点をドラッグして状態平面上の初期位置を変更 · 矢印キーでも移動できます。
-        <br />
-        <span>
-          高さはVを圧縮表示しています。物理的な時空や重力の再現ではありません。
-        </span>
-      </p>
+      </details>
     </div>
   );
 }

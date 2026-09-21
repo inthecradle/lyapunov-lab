@@ -189,47 +189,6 @@ h1 span {
   width: 1px;
   background: linear-gradient(var(--mint), #24303d);
 }
-.step-navigation {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: #101720;
-  overflow: hidden;
-}
-.step-navigation button {
-  position: relative;
-  text-align: left;
-  padding: 17px 15px;
-  color: var(--muted);
-  font-size: 12px;
-  border-right: 1px solid var(--line);
-  white-space: nowrap;
-}
-.step-navigation button:last-child {
-  border-right: 0;
-}
-.step-navigation button > span {
-  font-family: ui-monospace, monospace;
-  font-size: 11px;
-  color: #738498;
-  margin-right: 10px;
-}
-.step-navigation .current {
-  color: #e8eef5;
-  background: #16262b;
-}
-.step-navigation .current > span {
-  color: var(--mint);
-}
-.step-navigation .current i {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--mint);
-}
 .experiment {
   scroll-margin-top: 20px;
 }
@@ -285,6 +244,9 @@ h1 span {
 .visual-grid {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
+  grid-template-areas:
+    "state graph"
+    "transport transport";
   gap: 18px;
   align-items: stretch;
 }
@@ -326,6 +288,7 @@ h1 span {
   color: var(--mint);
 }
 .state-panel {
+  grid-area: state;
   display: flex;
   flex-direction: column;
 }
@@ -344,6 +307,9 @@ h1 span {
   color: var(--muted);
   padding: 5px 0 8px;
   line-height: 1.7;
+}
+.state-tools > summary {
+  display: none;
 }
 .state-legend {
   display: flex;
@@ -418,6 +384,7 @@ h1 span {
   font-weight: 400;
 }
 .graph-panel {
+  grid-area: graph;
   padding-bottom: 20px;
 }
 .graph-readout {
@@ -550,10 +517,10 @@ h1 span {
   border-color: #65e6d077;
 }
 .transport {
+  grid-area: transport;
   display: flex;
   align-items: center;
   gap: 17px;
-  margin-top: 16px;
   padding: 16px 22px;
 }
 .play-button {
@@ -753,21 +720,11 @@ input[type="range"]::-moz-range-thumb {
 }
 .proof-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 15px;
   margin-top: auto;
   padding-top: 10px;
-}
-.outline-button {
-  padding: 10px 15px;
-  border: 1px solid #416761;
-  border-radius: 4px;
-  color: var(--mint);
-  font-size: 11px;
-}
-.outline-button:hover {
-  background: #65e6d00c;
 }
 .step-actions {
   display: flex;
@@ -776,8 +733,8 @@ input[type="range"]::-moz-range-thumb {
 .step-actions button {
   border: 1px solid var(--line);
   border-radius: 4px;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
 }
 .proof-engine {
   background: #0e1620;
@@ -1124,13 +1081,6 @@ footer a:hover {
   .intro-aside {
     display: none;
   }
-  .step-navigation button {
-    padding: 15px 10px;
-    font-size: 11px;
-  }
-  .step-navigation button > span {
-    margin-right: 6px;
-  }
   .visual-grid {
     gap: 12px;
     grid-template-columns: 1fr 1fr;
@@ -1236,18 +1186,6 @@ footer a:hover {
     font-size: 11px;
     letter-spacing: 0;
   }
-  .step-navigation {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .step-navigation button {
-    padding: 14px 10px;
-  }
-  .step-navigation button:nth-child(3) {
-    border-right: 0;
-  }
-  .step-navigation button:nth-child(-n + 3) {
-    border-bottom: 1px solid var(--line);
-  }
   .experiment-toolbar {
     margin-top: 20px;
     gap: 12px;
@@ -1266,6 +1204,10 @@ footer a:hover {
   }
   .visual-grid {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "state"
+      "transport"
+      "graph";
     gap: 16px;
   }
   .state-visual svg {
@@ -1274,14 +1216,42 @@ footer a:hover {
   .panel-heading {
     padding: 21px 20px 14px;
   }
+  .state-panel .panel-heading {
+    padding: 14px 12px 10px;
+    gap: 8px;
+  }
+  .state-panel .panel-heading h2 {
+    font-size: 12px;
+  }
+  .state-panel .coordinate-tag {
+    font-size: 9px;
+    white-space: nowrap;
+    padding: 5px;
+  }
+  .state-tools > summary {
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 10px 4px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .state-tools > summary::after {
+    content: "＋";
+  }
+  .state-tools[open] > summary::after {
+    content: "−";
+  }
   .state-values {
-    padding: 17px 24px;
+    padding: 12px 16px;
   }
   .state-values b {
     font-size: 14px;
   }
   .state-legend {
-    font-size: 10px;
+    font-size: 9px;
+    gap: 10px;
+    padding: 8px 10px 12px;
   }
   .graph-readout {
     padding: 4px 24px 0;
@@ -1309,24 +1279,28 @@ footer a:hover {
     margin-left: 8px;
   }
   .transport {
-    padding: 14px 15px;
-    gap: 10px;
+    padding: 10px 15px;
+    gap: 8px;
     flex-wrap: wrap;
   }
   .play-button {
     min-width: 84px;
+    min-height: 44px;
     font-size: 11px;
     padding: 10px;
   }
   .reset-button {
     padding: 0 5px;
+    min-width: 44px;
+    min-height: 44px;
   }
   .timeline {
     order: 4;
     flex-basis: 100%;
-    padding-top: 8px;
+    padding-top: 0;
   }
   .time-output {
+    min-width: 0;
     margin-left: auto;
     font-size: 17px;
   }
@@ -1513,11 +1487,12 @@ footer a:hover {
 }
 @media (max-width: 760px) {
   .state-view-toolbar {
-    padding: 0 18px 12px;
+    padding: 0 12px 8px;
     gap: 6px;
+    justify-content: flex-end;
   }
   .state-view-toolbar > span {
-    font-size: 9px;
+    display: none;
   }
 }
 

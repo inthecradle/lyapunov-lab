@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import StateSpace from "./components/StateSpace";
 import TimeGraph from "./components/TimeGraph";
 import ParameterControls from "./components/ParameterControls";
@@ -29,8 +29,7 @@ const MODE_LABELS: Record<Mode, string> = {
 const MODE_DESCRIPTIONS: Record<Mode, string> = {
   intuition: "図と文章を中心に表示します。数式の一覧と証明中の式を省略します。",
   math: "図と数式を対応させて確認できます。式を選ぶと、図の対応箇所が光ります。",
-  proof:
-    "証明の手順を強調表示します。時間スライダーと証明ステップが連動します。",
+  proof: "証明の手順を強調表示します。左右ボタンで段階ごとに確認できます。",
 };
 
 export default function App() {
@@ -46,11 +45,9 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [mode, setMode] = useState<Mode>("math");
   const [step, setStep] = useState(0);
-  const [proofPlaying, setProofPlaying] = useState(false);
-  const [proofDone, setProofDone] = useState(false);
+  const proofDone = step === proofSteps.length - 1;
   const [active, setActive] = useState<MathId | null>("x");
   const [quiz, setQuiz] = useState<string | null>(null);
-  const proofElapsed = useRef(0);
   const current = sampleAt(time, params);
   const initial = sampleAt(0, params);
   const outside = initial.residual > 1e-10;
@@ -82,51 +79,17 @@ export default function App() {
     if (time >= DURATION) setPlaying(false);
   }, [time]);
 
-  useEffect(() => {
-    if (!proofPlaying) return;
-    let frame = 0;
-    let last: number | null = null;
-    let previousStep = -1;
-    const animate = (now: number) => {
-      const dt = last === null ? 0 : Math.min((now - last) / 1000, 0.1);
-      last = now;
-      proofElapsed.current += dt;
-      const nextStep = Math.min(5, Math.floor(proofElapsed.current / 2.4));
-      if (nextStep !== previousStep) {
-        setStep(nextStep);
-        setActive(proofSteps[nextStep].focus);
-        previousStep = nextStep;
-      }
-      setTime(Math.min(DURATION, (proofElapsed.current / 14.4) * DURATION));
-      if (proofElapsed.current >= 14.4) {
-        setProofPlaying(false);
-        setProofDone(true);
-        return;
-      }
-      frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [proofPlaying, proofSteps]);
-
   const pause = () => {
     setPlaying(false);
-    setProofPlaying(false);
   };
   const seek = (value: number) => {
     pause();
     setTime(value);
-    setProofDone(false);
-    proofElapsed.current = (value / DURATION) * 14.4;
-    if (mode === "proof")
-      setStep(Math.min(5, Math.floor(proofElapsed.current / 2.4)));
   };
   const selectStep = (value: number) => {
     pause();
     setStep(value);
     setActive(proofSteps[value].focus);
-    setProofDone(false);
-    proofElapsed.current = value * 2.4;
     setTime(value * 2);
   };
   const changeParams = (next: Parameters, nextStudy: Study = study) => {
@@ -134,9 +97,7 @@ export default function App() {
     setParams(nextStudy === "invariance" ? invariantParameters(next) : next);
     setTime(0);
     setStep(0);
-    setProofDone(false);
     setQuiz(null);
-    proofElapsed.current = 0;
   };
   const changeStudy = (next: Study) => {
     setStudy(next);
@@ -151,31 +112,14 @@ export default function App() {
     setTime(0);
     setStep(0);
     setActive("x");
-    setProofDone(false);
-    proofElapsed.current = 0;
   };
   const play = () => {
-    if (playing || proofPlaying) {
+    if (playing) {
       pause();
       return;
     }
     if (time >= DURATION) setTime(0);
     setPlaying(true);
-  };
-  const playProof = () => {
-    setPlaying(false);
-    setMode("proof");
-    if (proofPlaying) {
-      setProofPlaying(false);
-      return;
-    }
-    if (proofDone || time >= DURATION) {
-      proofElapsed.current = 0;
-      setStep(0);
-      setTime(0);
-      setProofDone(false);
-    } else proofElapsed.current = (time / DURATION) * 14.4;
-    setProofPlaying(true);
   };
   const token = (id: MathId, tex: string) => (
     <MathToken id={id} tex={tex} active={active} onSelect={setActive} />
@@ -230,21 +174,6 @@ export default function App() {
             </p>
           </div>
         </section>
-
-        <nav className="step-navigation" aria-label="学習ステップ">
-          {proofSteps.map((item, index) => (
-            <button
-              key={item.short}
-              aria-current={step === index ? "step" : undefined}
-              className={step === index ? "current" : ""}
-              onClick={() => selectStep(index)}
-            >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              {item.short}
-              <i />
-            </button>
-          ))}
-        </nav>
 
         <section
           id="experiment"
@@ -359,6 +288,46 @@ export default function App() {
               </div>
             </section>
 
+            <div className="transport panel">
+              <button
+                className="play-button"
+                onClick={play}
+                aria-label={playing ? "一時停止" : "シミュレーションを再生"}
+              >
+                <span aria-hidden="true">{playing ? "Ⅱ" : "▶"}</span>
+                {playing ? "一時停止" : time >= DURATION ? "もう一度" : "再生"}
+              </button>
+              <button
+                className="reset-button"
+                onClick={reset}
+                title="時間と証明をリセット"
+                aria-label="リセット"
+              >
+                ↺
+              </button>
+              <label className="timeline">
+                <span className="sr-only">時間</span>
+                <input
+                  aria-label="時間"
+                  type="range"
+                  min="0"
+                  max={DURATION}
+                  step=".01"
+                  value={time}
+                  onChange={(e) => seek(Number(e.target.value))}
+                />
+                <span className="timeline-labels">
+                  <span>0</span>
+                  <span>モデル時間 t</span>
+                  <span>{DURATION}</span>
+                </span>
+              </label>
+              <output className="time-output" data-testid="time-output">
+                {time.toFixed(2)}
+                <small> / {DURATION.toFixed(2)}</small>
+              </output>
+            </div>
+
             <section
               className={`panel graph-panel ${["y", "derivative", "alpha", "comparison"].includes(active ?? "") ? "connected" : ""}`}
             >
@@ -368,7 +337,7 @@ export default function App() {
                   <h2>評価量の変化を追う</h2>
                 </div>
                 <span className="live-label">
-                  {playing || proofPlaying ? "● RUNNING" : "○ PAUSED"}
+                  {playing ? "● RUNNING" : "○ PAUSED"}
                 </span>
               </div>
               <TimeGraph
@@ -403,54 +372,6 @@ export default function App() {
                 </div>
               </button>
             </section>
-          </div>
-
-          <div className="transport panel">
-            <button
-              className="play-button"
-              onClick={play}
-              aria-label={
-                playing || proofPlaying ? "一時停止" : "シミュレーションを再生"
-              }
-            >
-              <span aria-hidden="true">
-                {playing || proofPlaying ? "Ⅱ" : "▶"}
-              </span>
-              {playing || proofPlaying
-                ? "一時停止"
-                : time >= DURATION
-                  ? "もう一度"
-                  : "再生"}
-            </button>
-            <button
-              className="reset-button"
-              onClick={reset}
-              title="時間と証明をリセット"
-              aria-label="リセット"
-            >
-              ↺
-            </button>
-            <label className="timeline">
-              <span className="sr-only">時間</span>
-              <input
-                aria-label="時間"
-                type="range"
-                min="0"
-                max={DURATION}
-                step=".01"
-                value={time}
-                onChange={(e) => seek(Number(e.target.value))}
-              />
-              <span className="timeline-labels">
-                <span>0</span>
-                <span>モデル時間 t</span>
-                <span>{DURATION}</span>
-              </span>
-            </label>
-            <output className="time-output" data-testid="time-output">
-              {time.toFixed(2)}
-              <small> / {DURATION.toFixed(2)}</small>
-            </output>
           </div>
 
           {mode !== "intuition" &&
@@ -582,7 +503,8 @@ export default function App() {
               <div className="proof-topline">
                 <span className="eyebrow">THE PROOF, STEP BY STEP</span>
                 <span className="proof-counter">
-                  {String(step + 1).padStart(2, "0")} <span>/ 06</span>
+                  {String(step + 1).padStart(2, "0")}{" "}
+                  <span>/ {String(proofSteps.length).padStart(2, "0")}</span>
                 </span>
               </div>
               <h2>{effectiveStep.title}</h2>
@@ -603,13 +525,6 @@ export default function App() {
                   </p>
                 )}
               <div className="proof-actions">
-                <button className="outline-button" onClick={playProof}>
-                  {proofPlaying
-                    ? "Ⅱ 証明を一時停止"
-                    : proofDone
-                      ? "↺ 証明をもう一度"
-                      : "▶ 証明を再生"}
-                </button>
                 <div className="step-actions">
                   <button
                     onClick={() => selectStep(step - 1)}
@@ -620,7 +535,7 @@ export default function App() {
                   </button>
                   <button
                     onClick={() => selectStep(step + 1)}
-                    disabled={step === 5}
+                    disabled={step === proofSteps.length - 1}
                     aria-label="次の証明ステップ"
                   >
                     →
@@ -660,9 +575,7 @@ export default function App() {
                 <span className="status-dot" />
                 {proofDone
                   ? proofStatus(params, study)
-                  : proofPlaying
-                    ? "証明を再生中"
-                    : "条件と論証をひとつずつ確認"}
+                  : "条件と論証をひとつずつ確認"}
               </div>
             </aside>
           </section>
