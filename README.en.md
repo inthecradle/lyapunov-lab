@@ -37,7 +37,7 @@ The three menus are “Comparison estimates” (比較評価), “Break the cond
 
 The default “Enter the TCZ and drift” (TCZに入って漂う) combines an approach trajectory satisfying V̇ = −βV outside the TCZ with an interior drift model. Inside, V can rise and fall while remaining at or below θ. Position and velocity are continuous, but the interior trajectory is an additional smooth elliptical construction for this teaching model, not a trajectory derived from the source paper. “Match the upper bound” (上限と一致させる) provides a comparison example that approaches the boundary asymptotically.
 
-Simulations for Theorems 2 and 3 are not implemented. Their entries at the bottom of the page indicate planned extensions. See [the mathematical model](docs/mathematics.en.md) for the equations, assumptions, and references.
+Simulations for Theorems 2 and 3 are not implemented. See [the mathematical model](docs/mathematics.en.md) for the equations, assumptions, and references.
 
 ## Validation
 
@@ -78,3 +78,9 @@ src/App.tsx                  Playback and learning-step coordination
 ```
 
 The structure supports future Theorem 2 and 3 models and proof steps, reusing selection and playback controls through shared identifiers. The initial types are designed for a single-agent, two-dimensional model.
+
+## Shared series design
+
+The header and footer are defined in `src/components/SeriesChrome.tsx` and `series-chrome.css`. Identical copies are kept in LYAPUNOV LAB and EVOLUTION LAB so each repository can build independently. Synchronize both copies when changing the shared design.
+
+Development links use `http://127.0.0.1:5173/` and `http://127.0.0.1:5174/`. Production builds link to [EVOLUTION LAB](https://inthecradle.github.io/evolution-lab/). Override the build-time environment variable `VITE_EVOLUTION_LAB_URL` when hosting it at a different URL. The current Lab is highlighted in the footer.

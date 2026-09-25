@@ -1,3 +1,4 @@
+import { SeriesHeader, SeriesFooter } from "./components/SeriesChrome";
 import { useEffect, useMemo, useState } from "react";
 import StateSpace from "./components/StateSpace";
 import TimeGraph from "./components/TimeGraph";
@@ -130,24 +131,7 @@ export default function App() {
       <a className="skip-link" href="#experiment">
         実験へ進む
       </a>
-      <header className="site-header">
-        <a href="#" className="wordmark" aria-label="LYAPUNOV LAB ホーム">
-          <svg viewBox="0 0 36 36" aria-hidden="true">
-            <ellipse cx="18" cy="18" rx="15" ry="10" />
-            <ellipse cx="18" cy="18" rx="9" ry="6" />
-            <circle cx="29" cy="12" r="2.5" />
-          </svg>
-          <span>
-            LYAPUNOV <b>LAB</b>
-          </span>
-        </a>
-        <div className="header-right">
-          <span className="edition">INTERACTIVE MATHEMATICS</span>
-          <a href="#about">
-            この実験について <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-      </header>
+      <SeriesHeader lab="lyapunov" />
 
       <main>
         <section className="intro">
@@ -744,13 +728,7 @@ export default function App() {
           </div>
         </section>
       </main>
-      <footer>
-        <span>
-          LYAPUNOV LAB <i>/</i>{" "}
-          <a href="https://note.com/dawn_of_coaching">コーチングの夜明け</a>{" "}
-          <i>/</i> CognitiveMind Inc.
-        </span>
-      </footer>
+      <SeriesFooter lab="lyapunov" />
     </div>
   );
 }
