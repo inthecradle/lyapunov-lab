@@ -2,9 +2,22 @@
 
 [日本語](README.md) | English
 
+[**Open the app**](https://inthecradle.github.io/lyapunov-lab/) · [GitHub repository](https://github.com/inthecradle/lyapunov-lab)
+
 An educational web app for exploring equations, state space, and time graphs through synchronized interaction. Built with React, TypeScript, Vite, SVG, and KaTeX. The 3D terrain is a computed surface projected onto SVG; it requires neither WebGL nor an additional rendering library. All calculations run in the browser, with no API or database.
 
 The application interface is currently in Japanese. This document explains its features and development setup in English.
+
+## COGNITIVE DYNAMICS SERIES
+
+All four installments are published. Explore them by topic, or use each Lab's footer to move between apps. The current Lab is highlighted.
+
+| Release | Lab                                                                   | Theorem | Topic                                                  |
+| ------- | --------------------------------------------------------------------- | ------- | ------------------------------------------------------ |
+| 1       | [LYAPUNOV LAB](https://inthecradle.github.io/lyapunov-lab/)           | 01      | Convergence and stability                              |
+| 2       | [EVOLUTION LAB](https://inthecradle.github.io/evolution-lab/)         | 12      | Fitness and evolutionary gradients                     |
+| 3       | [HJB LAB](https://inthecradle.github.io/hjb-lab/)                     | 08      | Value landscapes and optimal control                   |
+| 4       | [INVERSE LIMIT LAB](https://inthecradle.github.io/inverse-limit-lab/) | 16      | Consistency across abstraction levels and fixed points |
 
 ## Getting started
 
@@ -58,6 +71,8 @@ Repository: [inthecradle/lyapunov-lab](https://github.com/inthecradle/lyapunov-l
 
 Pushing to `main` runs `.github/workflows/pages.yml`. After numerical tests, the build, and browser tests succeed, the site is deployed automatically to GitHub Pages.
 
+The footer in the published build links to the live sites for all four Labs.
+
 `node_modules`, `dist`, and test output are excluded by `.gitignore`. The deployed artifact is the generated `dist` directory.
 
 The app uses `base: './'` and navigation within a single page, so asset paths do not depend on a specific repository name or custom domain. It does not use SPA routing that changes the URL path and does not rely on a GitHub Pages 404 fallback.
@@ -81,6 +96,4 @@ The structure supports future Theorem 2 and 3 models and proof steps, reusing se
 
 ## Shared series design
 
-The header and footer are defined in `src/components/SeriesChrome.tsx` and `series-chrome.css`. Identical copies are kept in LYAPUNOV LAB and EVOLUTION LAB so each repository can build independently. Synchronize both copies when changing the shared design.
-
-Development links use `http://127.0.0.1:5173/` and `http://127.0.0.1:5174/`. Production builds link to [EVOLUTION LAB](https://inthecradle.github.io/evolution-lab/). Override the build-time environment variable `VITE_EVOLUTION_LAB_URL` when hosting it at a different URL. The current Lab is highlighted in the footer.
+The header and footer are defined in `src/components/SeriesChrome.tsx` and `series-chrome.css`. Keep `SeriesChrome.tsx` identical across the three React apps: LYAPUNOV LAB, EVOLUTION LAB, and INVERSE LIMIT LAB. Keep `series-chrome.css` identical across all four Labs, including the static HTML app HJB LAB. Each app builds independently; synchronize all applicable copies when changing the shared design.

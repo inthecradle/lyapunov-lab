@@ -1,15 +1,21 @@
 import "./series-chrome.css";
 
-type LabId = "lyapunov" | "evolution";
+type LabId = "lyapunov" | "hjb" | "evolution" | "inverse";
 const labs = {
   lyapunov: { name: "LYAPUNOV", theorem: "01", theme: "収束と安定性" },
+  hjb: { name: "HJB", theorem: "08", theme: "未来からの最適制御" },
   evolution: { name: "EVOLUTION", theorem: "12", theme: "適応度と進化" },
+  inverse: { name: "INVERSE LIMIT", theorem: "16", theme: "逆極限と固定点" },
 };
 
 function labUrl(lab: LabId): string | undefined {
   if (import.meta.env.DEV) {
-    return `http://127.0.0.1:${lab === "lyapunov" ? 5173 : 5174}/`;
+    const ports = { lyapunov: 5173, hjb: 5175, evolution: 5174, inverse: 5176 };
+    return `http://127.0.0.1:${ports[lab]}/`;
   }
+  if (lab === "inverse")
+    return import.meta.env.VITE_INVERSE_LIMIT_LAB_URL || undefined;
+  if (lab === "hjb") return import.meta.env.VITE_HJB_LAB_URL || undefined;
   return lab === "lyapunov"
     ? "https://inthecradle.github.io/lyapunov-lab/"
     : import.meta.env.VITE_EVOLUTION_LAB_URL ||
@@ -39,6 +45,10 @@ export function SeriesHeader({ lab }: { lab: LabId }) {
                 <ellipse cx="18" cy="18" rx="9" ry="6" />
                 <circle cx="29" cy="12" r="2.5" />
               </>
+            ) : lab === "hjb" ? (
+              <path d="M30 8H18L7 18l11 10h12M7 18h23" />
+            ) : lab === "inverse" ? (
+              <path d="M7 8h22M7 18h22M7 28h22M12 8v20m12-20v20M9 15l3 3 3-3m6 10 3 3 3-3" />
             ) : (
               <path d="M3 29C15 29 16 7 33 7M3 29C18 29 23 25 33 25" />
             )}

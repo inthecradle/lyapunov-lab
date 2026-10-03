@@ -15,6 +15,8 @@ concurrency:
 
 env:
   VITE_EVOLUTION_LAB_URL: https://inthecradle.github.io/evolution-lab/
+  VITE_HJB_LAB_URL: https://inthecradle.github.io/hjb-lab/
+  VITE_INVERSE_LIMIT_LAB_URL: https://inthecradle.github.io/inverse-limit-lab/
 
 jobs:
   build:

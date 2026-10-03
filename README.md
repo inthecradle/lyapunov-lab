@@ -2,7 +2,20 @@
 
 日本語 | [English](README.en.md)
 
+[**ブラウザで試す**](https://inthecradle.github.io/lyapunov-lab/) · [GitHubリポジトリ](https://github.com/inthecradle/lyapunov-lab)
+
 数式・状態空間・時間グラフを同期して操作する教育用Webアプリです。React + TypeScript + Vite + SVG + KaTeX。3D地形は計算した曲面をSVGへ投影して描き、WebGLや追加ライブラリは不要です。計算はブラウザ内で完結し、APIやデータベースは使用しません。
+
+## COGNITIVE DYNAMICS SERIES
+
+公開済みの4作品を、テーマに合わせて試せます。各Labのフッターから他の作品へ移動でき、現在のLabは選択状態で表示します。
+
+| 公開順 | Lab                                                                   | 定理 | テーマ                 |
+| ------ | --------------------------------------------------------------------- | ---- | ---------------------- |
+| 第1弾  | [LYAPUNOV LAB](https://inthecradle.github.io/lyapunov-lab/)           | 01   | 収束と安定性           |
+| 第2弾  | [EVOLUTION LAB](https://inthecradle.github.io/evolution-lab/)         | 12   | 適応度と進化勾配       |
+| 第3弾  | [HJB LAB](https://inthecradle.github.io/hjb-lab/)                     | 08   | 価値地形と最適制御     |
+| 第4弾  | [INVERSE LIMIT LAB](https://inthecradle.github.io/inverse-limit-lab/) | 16   | 抽象階層の整合と固定点 |
 
 ## 起動
 
@@ -56,6 +69,8 @@ npm run test:e2e
 
 `main` へのpushで `.github/workflows/pages.yml` が実行されます。数値テスト・ビルド・ブラウザ操作テストの成功後、GitHub Pagesへ自動反映されます。
 
+公開ビルドのフッターから、シリーズ4作品の公開サイトへ移動できます。
+
 `node_modules`、`dist`、テスト出力は `.gitignore` で除外しています。公開する成果物はビルドで生成される `dist` です。
 
 `base: './'` と画面内ナビゲーションを使うため、リポジトリ名や独自ドメインに依存したアセットパスはありません。URLパスを切り替えるSPAルーティングも使用せず、GitHub Pagesの404フォールバックに依存しません。
@@ -79,6 +94,4 @@ src/App.tsx                  再生・学習ステップの統合
 
 ## 共通のシリーズ表示
 
-ヘッダーとフッターは `src/components/SeriesChrome.tsx` と `series-chrome.css` に分離しています。LYAPUNOV LAB / EVOLUTION LAB の両方に同じファイルを配置し、個別のリポジトリとしてビルドできます。共通デザインを修正するときは両方を同期します。
-
-開発サーバーではLab間のリンクを `http://127.0.0.1:5173/` と `http://127.0.0.1:5174/` に向けています。公開ビルドでは [EVOLUTION LAB](https://inthecradle.github.io/evolution-lab/) へリンクします。別のURLへ配信する場合は、ビルド時の環境変数 `VITE_EVOLUTION_LAB_URL` で変更できます。現在のLabは常に選択状態で表示します。
+ヘッダーとフッターは `src/components/SeriesChrome.tsx` と `series-chrome.css` に分離しています。`SeriesChrome.tsx` はReact製のLYAPUNOV LAB / EVOLUTION LAB / INVERSE LIMIT LABの3作品で、`series-chrome.css` は静的HTMLのHJB LABを含む4作品で同じ内容を保持します。各アプリを独立してビルドでき、共通デザインを変更するときは該当する全コピーを同期します。
