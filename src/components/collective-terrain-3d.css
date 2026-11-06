@@ -1,0 +1,239 @@
+.cl-terrain {
+  width: 100%;
+}
+.cl-terrain-agent-select {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 2px 24px 6px;
+}
+.cl-terrain-agent-select > span {
+  font-size: 10px;
+  color: var(--muted);
+  margin-right: 8px;
+}
+.cl-terrain-agent-select button {
+  padding: 6px 10px;
+  font-size: 11px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #101b25;
+}
+.cl-terrain-agent-select button[aria-pressed="true"] {
+  border-color: currentColor;
+  background: #20303b;
+}
+.cl-terrain-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.cl-terrain-svg text {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  pointer-events: none;
+}
+.cl-terrain-svg text:not([fill]) {
+  fill: #9fafbf;
+}
+.cl-terrain-svg .cl-terrain-current-label {
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: #101923;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.cl-terrain-svg .cl-terrain-floor-label {
+  font-size: 10px;
+  fill: #708699;
+}
+.cl-terrain-current {
+  cursor: grab;
+  touch-action: none;
+}
+.cl-terrain-current:active {
+  cursor: grabbing;
+}
+.cl-terrain-current:focus-visible {
+  outline: none;
+  stroke: white;
+  stroke-width: 4px;
+}
+.cl-terrain-camera {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 0 24px 10px;
+}
+.cl-terrain-camera label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.cl-terrain-camera input {
+  width: 100%;
+  min-width: 0;
+  accent-color: #65e6d0;
+}
+.cl-terrain-camera output {
+  min-width: 28px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.cl-terrain-description {
+  margin: 0;
+  padding: 2px 24px 19px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.85;
+}
+@media (max-width: 600px) {
+  .cl-terrain-agent-select {
+    padding-inline: 16px;
+  }
+  .cl-terrain-camera {
+    padding-inline: 16px;
+    gap: 12px;
+  }
+  .cl-terrain-camera label {
+    gap: 5px;
+  }
+  .cl-terrain-description {
+    padding-inline: 16px;
+  }
+}
+
+.cl-terrain-details {
+  margin: 0 24px 18px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.85;
+}
+.cl-terrain-details summary {
+  cursor: pointer;
+  color: #9dafbf;
+}
+.cl-terrain-details p {
+  margin: 9px 0 0;
+}
+@media (max-width: 600px) {
+  .cl-terrain-details {
+    margin-inline: 16px;
+  }
+}
+.cl-terrain-threshold-legend {
+  padding: 0 24px 12px;
+  font-size: 10px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.cl-terrain-threshold-legend p {
+  margin: 3px 0;
+}
+.cl-terrain-threshold-legend p:first-child {
+  color: #a5d8bc;
+}
+.cl-terrain-threshold-legend span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  background: #65e6a477;
+  border: 1px solid #83ffb8;
+  border-radius: 2px;
+}
+@media (max-width: 600px) {
+  .cl-terrain-threshold-legend {
+    padding-inline: 16px;
+  }
+}
+
+.cl-terrain-comparison {
+  margin: 0 24px 16px;
+  padding: 10px 12px;
+  border-left: 2px solid #ffe08a88;
+  background: #ffe08a05;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.8;
+}
+.cl-terrain-comparison p {
+  margin: 2px 0;
+}
+.cl-terrain-comparison p:first-child {
+  color: #ffe08a;
+}
+.cl-terrain-comparison b {
+  margin-left: 10px;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 600px) {
+  .cl-terrain-comparison {
+    margin-inline: 16px;
+  }
+}
+
+.cl-terrain-intro {
+  margin: 8px 24px 0;
+  padding: 11px 12px;
+  border-left: 2px solid #a6bad2;
+  background: #91a6ff08;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.7;
+}
+.cl-terrain-intro strong {
+  color: #d5e0ed;
+  font-size: 12px;
+}
+.cl-terrain-intro span {
+  margin-left: 12px;
+  color: #bbc9dc;
+}
+.cl-terrain-intro p {
+  margin: 4px 0;
+}
+.cl-terrain-intro small {
+  font-size: 9px;
+}
+.cl-terrain-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+.cl-morph-slider {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0 12px;
+}
+.cl-morph-slider span {
+  margin-left: 0;
+}
+.cl-morph-slider output {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+.cl-morph-slider input {
+  width: 100%;
+  accent-color: #91a6ff;
+}
+.cl-terrain-intro-actions button {
+  flex-shrink: 0;
+  border: 1px solid #344457;
+  border-radius: 4px;
+  padding: 7px 9px;
+  font-size: 10px;
+}
+@media (max-width: 600px) {
+  .cl-terrain-intro {
+    margin-inline: 16px;
+  }
+}

@@ -199,6 +199,6 @@ The vertical axis is a visualization device. It adds no state variable or equati
 
 In normal mode, a point initialized outside travels from the plane into the depression and approaches the boundary V=θ. The display does not force it to the bottom at `V=0`. A trajectory starting inside maintains its height in normal mode. The 3D view is a projection onto SVG; changing the viewpoint or switching to the 2D view does not affect the calculation. Other fields display the changes in V determined by their respective analytic solutions.
 
-The implementation covers a single agent and a static potential. It constructs concrete fields whose properties can be checked analytically, rather than deriving an instantaneous descent condition from minimization of an integral cost. Multiple agents and abstraction potentials are left for future implementation.
+This document covers Theorem 1's single-agent model and static potential. It describes concrete fields whose properties can be checked analytically, rather than deriving an instantaneous descent condition from minimization of an integral cost. The implemented multi-agent models and abstraction potential, including their terrain displays and playback behavior, are described in [the Theorem 2 and 3 visualization model](collective-mathematics.en.md).
 
 Unit tests verify agreement between trajectory finite differences and the vector field, potential derivatives, comparison estimates across parameter combinations, interior and boundary invariance, noncircular trajectories, distance bounds, and long-time behavior.

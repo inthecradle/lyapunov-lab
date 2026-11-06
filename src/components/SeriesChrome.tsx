@@ -27,7 +27,13 @@ function openAbout() {
   if (details) details.open = true;
 }
 
-export function SeriesHeader({ lab }: { lab: LabId }) {
+export function SeriesHeader({
+  lab,
+  theoremLabel,
+}: {
+  lab: LabId;
+  theoremLabel?: string;
+}) {
   const { name, theorem } = labs[lab];
   return (
     <header className="series-header" id="top">
@@ -58,7 +64,9 @@ export function SeriesHeader({ lab }: { lab: LabId }) {
           </span>
         </a>
         <div className="series-header-actions">
-          <span className="series-theorem">THEOREM {theorem}</span>
+          <span className="series-theorem">
+            THEOREM {theoremLabel ?? theorem}
+          </span>
           <a href="#about" className="series-about-link" onClick={openAbout}>
             この実験について <span aria-hidden="true">↗</span>
           </a>

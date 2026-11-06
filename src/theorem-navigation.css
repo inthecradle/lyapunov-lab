@@ -1,0 +1,53 @@
+.theorem-navigation {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+.theorem-navigation button {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 20px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.theorem-navigation button[aria-pressed="true"] {
+  border-color: var(--mint);
+  background: #122724;
+}
+.theorem-number {
+  color: var(--mint);
+  font-size: 22px;
+  font-weight: 300;
+}
+.theorem-navigation strong {
+  display: block;
+  font-size: 14px;
+}
+.theorem-navigation small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+@media (max-width: 620px) {
+  .theorem-navigation {
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .theorem-navigation button {
+    flex-direction: column;
+    gap: 7px;
+    padding: 12px 5px;
+    text-align: center;
+  }
+  .theorem-navigation strong {
+    font-size: 12px;
+  }
+  .theorem-navigation small {
+    font-size: 10px;
+  }
+}
